@@ -1,80 +1,73 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TaskCrud.Data;
 
 namespace TaskCrud.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TaskController : ControllerBase
+    public class TaskController(TaskDbContext context) : ControllerBase
     {
         
-        static private List<Task> tasks = new List<Task>
-        {
-            new Task
-            {
-                Id = 1,
-                Name = "Test",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-            },
-            new Task
-            {
-                Id = 2,
-                Name = "Test",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-            }
-        };
-
+        private readonly TaskDbContext _context = context;
+        
         [HttpGet]
-        public ActionResult<List<Task>> GetTasks() {
-            return Ok(tasks);
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<Task> GetTaskById(int id)
+        public async Task<ActionResult<List<TaskModel>>> GetTasks() 
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id );
+            return Ok(await _context.Tasks.ToListAsync());
+        }
+        
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TaskModel>> GetTaskById(int id)
+        {
+            var task = await _context.Tasks.FindAsync(id);
             if(task == null)
                 return NotFound();
 
             return Ok(task);
         }
-
+        
         [HttpPost]
-        public ActionResult<Task> AddNewTask(Task newTask) 
+        public async Task<ActionResult<TaskModel>> AddNewTask(TaskModel newTask) 
         { 
-            if(newTask == null)
+            if(newTask is null)
                 return BadRequest();
 
-            newTask.Id = tasks.Max(t => t.Id) + 1;
-            tasks.Add(newTask);
+            _context.Tasks.Add(newTask);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetTaskById), new { id = newTask.Id }, newTask);
         }
-
+        
         [HttpPut("{id}")]
-        public IActionResult UpdateTask(int id, Task updateTask)
+        public async Task<IActionResult> UpdateTask(int id, TaskModel updateTask)
         {
-            var task = tasks.FirstOrDefault(t =>t.Id == id);
+            var task = await _context.Tasks.FindAsync(id);
             if(task == null)
                 return NotFound();
 
             task.Name = updateTask.Name;
             task.Description = updateTask.Description;
+            
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
+        
         [HttpDelete("{id}")]
-        public IActionResult DeleteTask(int id) 
+        public async Task<IActionResult> DeleteTask(int id) 
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var task = await _context.Tasks.FindAsync(id);
             if (task == null)
                 return NotFound();
 
-            tasks.Remove(task);
+            _context.Tasks.Remove(task);
+            
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+       
     }
 }
