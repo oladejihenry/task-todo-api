@@ -1,0 +1,55 @@
+# Build and output folders
+bin/
+obj/
+out/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code files
+.vscode/
+
+# Rider IDE files
+.idea/
+
+# NuGet packages
+*.nupkg
+packages/
+.nuget/
+
+# ASP.NET temporary files
+*.cache
+*.log
+*.vspscc
+
+# Publish output
+*.Publish.xml
+publish/
+
+# Configuration files containing secrets
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Rider, VS, JetBrains temporary files
+*.iml
+*.ipr
+*.iws
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Node modules (if using frontend tooling)
+node_modules/
+
+# JetBrains Rider caches
+.idea/
+
+# Optional: Resharper
+_ReSharper*/
+*.DotSettings.user
