@@ -53,3 +53,5 @@ node_modules/
 # Optional: Resharper
 _ReSharper*/
 *.DotSettings.user
+
+.env
